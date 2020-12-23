@@ -72,7 +72,7 @@ function process_users() {
       bucket=$override_bucket
       override=1
     fi
-    create_sftp_user $username $pw "$ssh_key" $super $bucket $3 $override
+    create_sftp_user $username "$pw" "$ssh_key" $super $bucket $3 $override
   done < $1
 
   mount -a

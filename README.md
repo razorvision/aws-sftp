@@ -15,21 +15,27 @@ Create some buckets in S3 (remember to replace "yourcompany" in the instructions
 
 ```bash
 aws s3 mb s3://yourcompany-ftp
-aws s3 mb s3://yourcompany-development-software
-aws s3 mb s3://yourcompany-development-keys
+aws s3 mb s3://yourcompany-<environment>-software
+aws s3 mb s3://yourcompany-<environment>-keys
 ```
 
 Upload the sample files:
 
 ```bash
 # copy the user setup script
-aws s3 cp resources/user-setup.sh s3://yourcompany-development-software/ftp/
+aws s3 cp resources/user-setup.sh s3://yourcompany-<environment>-software/ftp/
 
 # copy the sample users file
 aws s3 cp ancillary-resources/sample-users/users.csv s3://yourcompany-development-software/ftp/
 
+# ..._or_ your own:
+aws s3 cp my_users.csv s3://yourcompany-production-software/ftp/
+
 # copy all sample host keys
 aws s3 cp ancillary-resources/sample-hostkeys/ s3://yourcompany-development-keys/ftp/ --recursive
+
+# ..._or_ your own (KEEP THESE SECRET!)
+aws s3 cp my-persistent-keys-folder/ s3://yourcompany-production-keys/ftp/ --recursive
 ```
 
 ## Launch the Server ##

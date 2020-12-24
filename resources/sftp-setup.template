@@ -507,7 +507,7 @@
                 "chmod 744 ./user-setup.sh\n",
                 "source ./user-setup.sh\n",
                 "aws s3 cp s3://", { "Ref" : "AbbreviatedCompanyName" }, "-", { "Ref" : "EnvironmentId" }, "-software/ftp/users.csv .\n",
-                "process_users ./users.csv ", { "Ref" : "SftpBucket" }, " ", { "Ref" : "AWS::Region" }, "\n",
+                "process_users ./users.csv ", { "Ref" : "SftpBucket" }, " ", { "Ref" : "AWS::Region" }, " ", { "Ref" : "FtpServerRole" }, "\n",
                 "rm ./users.csv\n",
 
                 "cfn-signal",

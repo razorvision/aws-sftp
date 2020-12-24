@@ -294,7 +294,7 @@
                     "s3:ListBucket"
                   ],
                   "Resource" : [
-                    { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "AbbreviatedCompanyName" }, "-", { "Ref" : "EnvironmentId" }, "-keys" ] ] },
+                    { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "AbbreviatedCompanyName" }, "-", { "Ref" : "EnvironmentId" }, "-keys" ] ] }
                   ]
                 }
               ]
@@ -481,7 +481,7 @@
                 "#################\n",
                 "groupadd sftpusers\n",
                 "groupadd sftpsuperusers\n",
-                "sed -i -e 's:Subsystem\Wsftp\W/usr/lib/openssh/sftp-server:# Subsystem sftp /usr/lib/openssh/sftp-server:g' /etc/ssh/sshd_config\n",
+                "sed -i.BAK -e 's:Subsystem\\Wsftp\\W/usr/lib/openssh/sftp-server:#Subsystem sftp /usr/lib/openssh/sftp-server:g' /etc/ssh/sshd_config\n",
                 "cat <<EOT >> /etc/ssh/sshd_config\n",
                   "#enable sftp\n",
                   "Subsystem sftp internal-sftp\n\n",
@@ -494,7 +494,7 @@
                   "   PasswordAuthentication yes\n\n",
 
                   "Match Group sftpsuperusers\n",
-                  "   ChrootDirectory %h\\.. #set the home directory\n",
+                  "   ChrootDirectory %h/.. #set the home directory\n",
                   "   ForceCommand internal-sftp\n",
                   "   X11Forwarding no\n",
                   "   AllowTCPForwarding no\n",

@@ -294,7 +294,7 @@
                     "s3:ListBucket"
                   ],
                   "Resource" : [
-                    { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "AbbreviatedCompanyName" }, "-", { "Ref" : "EnvironmentId" }, "-keys" ] ] },
+                    { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "AbbreviatedCompanyName" }, "-", { "Ref" : "EnvironmentId" }, "-keys" ] ] }
                   ]
                 }
               ]
@@ -465,6 +465,7 @@
                 "#!/bin/bash -x\n",
                 "apt-get -y update\n",
                 "apt-get -y install awscli\n",
+                "apt-get -y install s3fs\n",
                 "export AWS_DEFAULT_REGION=", { "Ref" : "AWS::Region"}, "\n",
 
                 "####################\n",
@@ -476,24 +477,11 @@
                 "chmod 644 *_key.pub\n",
 
                 "#################\n",
-                "# Install s3fs\n",
-                "#################\n",
-                "apt-get -y install build-essential libcurl4-openssl-dev libxml2-dev mime-support\n",
-                "apt-get -y install automake autotools-dev g++ git libcurl4-gnutls-dev libfuse-dev libssl-dev libxml2-dev make pkg-config\n",
-                "cd /usr/src/\n",
-                "git clone https://github.com/s3fs-fuse/s3fs-fuse.git\n",
-                "cd s3fs-fuse\n",
-                "./autogen.sh\n",
-                "./configure\n",
-                "make\n",
-                "make install\n",
-
-                "#################\n",
                 "# Setup SFTP\n",
                 "#################\n",
                 "groupadd sftpusers\n",
                 "groupadd sftpsuperusers\n",
-                "sed -i -e 's:Subsystem sftp /usr/lib/openssh/sftp-server:#Subsystem sftp /usr/lib/openssh/sftp-server:g' /etc/ssh/sshd_config\n",
+                "sed -i.BAK -e 's:Subsystem\\Wsftp\\W/usr/lib/openssh/sftp-server:#Subsystem sftp /usr/lib/openssh/sftp-server:g' /etc/ssh/sshd_config\n",
                 "cat <<EOT >> /etc/ssh/sshd_config\n",
                   "#enable sftp\n",
                   "Subsystem sftp internal-sftp\n\n",
@@ -506,7 +494,7 @@
                   "   PasswordAuthentication yes\n\n",
 
                   "Match Group sftpsuperusers\n",
-                  "   ChrootDirectory %h\\.. #set the home directory\n",
+                  "   ChrootDirectory %h/.. #set the home directory\n",
                   "   ForceCommand internal-sftp\n",
                   "   X11Forwarding no\n",
                   "   AllowTCPForwarding no\n",
@@ -519,7 +507,7 @@
                 "chmod 744 ./user-setup.sh\n",
                 "source ./user-setup.sh\n",
                 "aws s3 cp s3://", { "Ref" : "AbbreviatedCompanyName" }, "-", { "Ref" : "EnvironmentId" }, "-software/ftp/users.csv .\n",
-                "process_users ./users.csv ", { "Ref" : "SftpBucket" }, " ", { "Ref" : "AWS::Region" }, "\n",
+                "process_users ./users.csv ", { "Ref" : "SftpBucket" }, " ", { "Ref" : "AWS::Region" }, " ", { "Ref" : "FtpServerRole" }, "\n",
                 "rm ./users.csv\n",
 
                 "cfn-signal",

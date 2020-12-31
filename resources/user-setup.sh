@@ -57,12 +57,18 @@ function create_sftp_user() {
 
     # link upload dir to s3
     cat <<EOT >> /etc/fstab
-$csu_bucket:/$userkey /home/$csu_user/uploads fuse.s3fs _netdev,allow_other,endpoint=$csu_region,iam_role=auto,uid=$usruid,gid=$usrgid 0 0
+$csu_bucket:/$userkey /home/$csu_user/uploads fuse.s3fs _netdev,allow_other,endpoint=$csu_region,iam_role=$iam_role,uid=$usruid,gid=$usrgid 0 0
 EOT
 }
 
-# usage: process_users <userfile> <bucket> <region>
+# usage: process_users <userfile> <bucket> <region> <iam_role>
 function process_users() {
+  iam_role=auto
+
+  if [ "$4" != "" ]; then
+    iam_role=$4
+  fi
+
   while IFS=, read username pw ssh_key super override_bucket
   do
     if [ "$override_bucket" == "" ]; then
@@ -72,7 +78,7 @@ function process_users() {
       bucket=$override_bucket
       override=1
     fi
-    create_sftp_user $username $pw "$ssh_key" $super $bucket $3 $override
+    create_sftp_user $username "$pw" "$ssh_key" $super $bucket $3 $override
   done < $1
 
   mount -a
